@@ -1,0 +1,24 @@
+{
+  "name": "fastify-repo",
+  "version": "1.0.0",
+  "description": "Simple server with fastify",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch --experimental-strip-types --no-warnings src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teigorme/fastify-repo.git"
+  },
+  "keywords": [],
+  "author": "Igor Teixeira",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/teigorme/fastify-repo/issues"
+  },
+  "homepage": "https://github.com/teigorme/fastify-repo#readme",
+  "dependencies": {
+    "fastify": "^5.6.1"
+  }
+}
