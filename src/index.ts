@@ -6,9 +6,16 @@ import {
   jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
+  hasZodFastifySchemaValidationErrors,
+  isResponseSerializationError,
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import { env } from "./env.ts";
+import { createUser } from "./routes/users/create-user.ts";
+import { getUsers } from "./routes/users/get-users.ts";
+import { getUser } from "./routes/users/get-user.ts";
+import { updateUser } from "./routes/users/update-user.ts";
+import { deleteUser } from "./routes/users/delete-user.ts";
 
 const app = fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
 
@@ -53,6 +60,40 @@ app.after(() => {
     },
   });
 });
+
+app.setErrorHandler((err, req, reply) => {
+  if (hasZodFastifySchemaValidationErrors(err)) {
+    return reply.code(400).send({
+      error: "Response Validation Error",
+      message: "Request doesn't match the schema",
+      statusCode: 400,
+      details: {
+        issues: err.validation,
+        method: req.method,
+        url: req.url,
+      },
+    });
+  }
+
+  if (isResponseSerializationError(err)) {
+    return reply.code(500).send({
+      error: "Internal Server Error",
+      message: "Response doesn't match the schema",
+      statusCode: 500,
+      details: {
+        issues: err.cause.issues,
+        method: err.method,
+        url: err.url,
+      },
+    });
+  }
+});
+
+app.register(createUser);
+app.register(getUsers);
+app.register(getUser);
+app.register(updateUser);
+app.register(deleteUser);
 
 app.listen({ port: env.PORT, host: env.HOST }).then(() => {
   console.log("HTTP server running🔥");
